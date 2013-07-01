@@ -14,6 +14,7 @@
     <link rel="shortcut icon" href="/img/icono.png">
 </head>
 <body onload="init()">
+    <div class="candau tancat"></div>
     <div id="wrapper">
         <div id="page" title="Please, press button.">
             <canvas id="canvas" height="430px" width="200px">

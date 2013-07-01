@@ -17,7 +17,6 @@ var client;
 
 function TrafficLightsMachine() {
 
-
     this.drawCircle = function(canvas, color, x, y) {
         var context = canvas.getContext('2d');
 
@@ -33,22 +32,24 @@ function TrafficLightsMachine() {
     };
 
     this.click = function(e){
-        var x = e.clientX - $("#canvas").position().left;
-        var y = e.clientY - $("#canvas").position().top;
-        
-        var color;
+        if(!trafficLightsMachine.locked){
+            var x = e.clientX - $("#canvas").position().left;
+            var y = e.clientY - $("#canvas").position().top;
+            
+            var color;
 
-        if(y < Y_RED){
-            color = RED;
+            if(y < Y_RED + 55){
+                color = RED;
+            }
+            else if(y < Y_YELLOW + 55){
+                color = YELLOW;
+            }
+            else{
+                color = GREEN;
+            }
+            trafficLightsMachine.switchColor(color);
+            trafficLightsMachine.storeColor(color);
         }
-        else if(y < Y_YELLOW){
-            color = YELLOW;
-        }
-        else{
-            color = GREEN;
-        }
-        trafficLightsMachine.switchColor(color);
-        trafficLightsMachine.storeColor(color);
     }
 
     this.switchColor = function(color){
@@ -88,10 +89,22 @@ function TrafficLightsMachine() {
 
     this.loadColor = function(){
         client.trafficLight.read(trafficLightId).done(function (data){
-        trafficlight = data[0];
-        trafficLightsMachine.switchColor(LIGHTS[trafficlight.estat]);
-    });
+            trafficlight = data[0];
+            trafficLightsMachine.switchColor(LIGHTS[trafficlight.estat]);
+        });
+    }
 
+    this.toogleLocked = function(){
+        trafficLightsMachine.locked = !trafficLightsMachine.locked;
+        var el = $(".candau");
+        el.removeClass("obert").removeClass("tancat");
+
+        if(trafficLightsMachine.locked){
+            el.addClass("tancat");
+        }
+        else{
+            el.addClass("obert");
+        }
     }
 }
 
@@ -100,7 +113,9 @@ function TrafficLightsMachine() {
 function init() {
     trafficLightsMachine = new TrafficLightsMachine();
     trafficLightsMachine.drawCircles(DARK_RED, DARK_YELLOW, DARK_GREEN);
+    trafficLightsMachine.locked = true;
     $("#canvas").click(trafficLightsMachine.click);
+    $(".candau").click(trafficLightsMachine.toogleLocked);
 
     client = new $.RestClient('http://trafficlightapp.storn.es/api/');
     client.add('trafficLight');
