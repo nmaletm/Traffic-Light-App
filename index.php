@@ -13,8 +13,12 @@
     <link rel="apple-touch-icon" href="/img/icono.png">
     <link rel="shortcut icon" href="/img/icono.png">
 </head>
-<body onload="init()">
-    <div class="candau tancat"></div>
+<body onload="init()" class="tancat">
+    <div class="candau"></div>
+    <div class="message-button message-wc" data-text="Visita al lavabo"></div>
+    <div class="message-button message-exit" data-text="Surt/entra un pacient"></div>
+    <div class="message-button message-musica" data-text="Algú pot tornar a obrir la música"></div>
+
     <div id="wrapper">
         <div id="page" title="Please, press button.">
             <canvas id="canvas" height="430px" width="200px">
@@ -30,10 +34,12 @@
         <div class="cloud x4"></div>
         <div class="cloud x5"></div>
     </div>
-
+    <div class="missatges"></div>
+    
 <script type="text/javascript">
 var trafficLightId = 1;
 </script>
+    <script src="http://js.pusher.com/2.1/pusher.min.js"></script>
     <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/jquery/1.8.3/jquery.min.js "></script>
     <script type="text/javascript" src="/js/jquery.rest.min.js"></script>
     <script type="text/javascript" src="/js/javascript.js"></script>

@@ -79,7 +79,7 @@ function TrafficLightsMachine() {
     this.storeColor = function(color){
         for(key in LIGHTS){
             var value = LIGHTS[key];
-            console.log(color + " - value:"+value + " - key:"+key);
+            //console.log(color + " - value:"+value + " - key:"+key);
             if(value == color){
                 client.trafficLight.update(trafficLightId, {'estat':''+key});
                 return;
@@ -96,7 +96,7 @@ function TrafficLightsMachine() {
 
     this.toogleLocked = function(){
         trafficLightsMachine.locked = !trafficLightsMachine.locked;
-        var el = $(".candau");
+        var el = $("body");
         el.removeClass("obert").removeClass("tancat");
 
         if(trafficLightsMachine.locked){
@@ -108,7 +108,8 @@ function TrafficLightsMachine() {
     }
 }
 
-
+var pusher;
+var channel;
 
 function init() {
     trafficLightsMachine = new TrafficLightsMachine();
@@ -119,9 +120,51 @@ function init() {
 
     client = new $.RestClient('http://trafficlightapp.storn.es/api/');
     client.add('trafficLight');
+    client.trafficLight.add('message');
 
     trafficLightsMachine.loadColor();
+
+    //Pusher.com:
+    pusher = new Pusher('2b70216815bfb3c5e6e3');
+    channel = pusher.subscribe('trafficLight');
+    channel.bind('change', function(data) {
+        if(data.id == trafficLightId){
+            trafficLightsMachine.switchColor(LIGHTS[data.estat]);
+        }
+    });
+    channel.bind('message', function(data) {
+        if(data.id == trafficLightId){
+            showMessage(data.text);
+        }
+    });
+
+    $(".message-button").click(function(){
+        if(!trafficLightsMachine.locked){
+            sendMessage($(this).attr("data-text"));
+        }
+    });
 }
 
+function sendMessage(message){
+    client.trafficLight.message.create(trafficLightId, {'text': message});
+}
 
-var timer = setInterval(function(){trafficLightsMachine.loadColor()},10*1000);
+function showMessage(message){
+    var el = $('.missatges');
+    //el.empty();
+    var date = new Date();
+    var hh = date.getHours();
+    var mm = date.getMinutes();
+    var ss = date.getSeconds();
+    var messate_time = hh+":"+mm+":"+ss;
+    el.append("<div class='missatge-popup'>"+message+" <br> <i><small>("+messate_time+") [click per tancar]</small></i></div>");
+    el.fadeIn(1000);
+    //el.delay(10000).fadeOut(300);
+
+    $(".missatge-popup").click(function(){
+        $(this).fadeOut(1000);
+        $(this).remove();
+    })
+}
+
+//var timer = setInterval(function(){trafficLightsMachine.loadColor()},10*1000);
